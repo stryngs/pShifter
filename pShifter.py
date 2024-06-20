@@ -11,6 +11,7 @@ class Shifter():
         self.parser.add_argument('-p', help = 'pcap file', metavar = '<pcap>', required = True)
         self.args = self.parser.parse_args()
         self.trackerDict = {}
+        self.eSet = {'ff:ff:ff:ff:ff:ff'}
 
 
     def l2Shifter(self):
@@ -37,31 +38,35 @@ class Shifter():
 
             ## Deal with not seen and track the seen
             if a1 is None:
-                new1 = pS.randMac(n.addr1)
-                pS.trackerDict.update({n.addr1: new1})
-                n.addr1 = new1
+                if n.addr1 not in self.eSet:
+                    new1 = pS.randMac(n.addr1)
+                    pS.trackerDict.update({n.addr1: new1})
+                    n.addr1 = new1
             else:
                 n.addr1 = a1
             if a2 is None:
-                new2 = pS.randMac(n.addr2)
-                pS.trackerDict.update({n.addr2: new2})
-                n.addr2 = new2
+                if n.addr2 not in self.eSet:
+                    new2 = pS.randMac(n.addr2)
+                    pS.trackerDict.update({n.addr2: new2})
+                    n.addr2 = new2
             else:
                 n.addr2 = a2
             if a3 is None:
-                new3 = pS.randMac(n.addr3)
-                pS.trackerDict.update({n.addr3: new3})
-                n.addr3 = new3
+                if n.addr3 not in self.eSet:
+                    new3 = pS.randMac(n.addr3)
+                    pS.trackerDict.update({n.addr3: new3})
+                    n.addr3 = new3
             else:
                 n.addr3 = a3
             if a4 is None:
-                if n.addr4 is None:
-                    new4 = None
-                else:
-                    new4 = pS.randMac(a4)
-                if new4 is not None:
-                    pS.trackerDict.update({n.addr4: new4})
-                    n.addr4 = new4
+                if n.addr4 not in self.eSet:
+                    if n.addr4 is None:
+                        new4 = None
+                    else:
+                        new4 = pS.randMac(a4)
+                    if new4 is not None:
+                        pS.trackerDict.update({n.addr4: new4})
+                        n.addr4 = new4
             fList.append(RadioTap(n.build()))
         with open('theShift.log', 'w') as oFile:
             for k, v in pS.trackerDict.items():
